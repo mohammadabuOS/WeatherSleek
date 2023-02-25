@@ -6,15 +6,23 @@
 //
 
 import SwiftUI
+import WeatherKit
 
 struct ContentView: View {
     @StateObject var locationManager = LocationManager()
+    //var weatherManager = WeatherManager()
+    @ObservedObject var weatherManager = WeatherManager()
+    @State var weather: Weather?
     
     var body: some View {
         VStack {
             
             if let location = locationManager.location {
                 Text("Coordinates: \(location.longitude), \(location.latitude)")
+                LoadingView()
+                    .task {
+                        await weatherManager.getCurrentWeather(latitude: location.latitude, longitude: location.longitude)
+                    }
             }
             
             else {
